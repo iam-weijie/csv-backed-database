@@ -1,2 +1,1 @@
-# CSV-backed-database
-Database management in C
+# CSV-backed Database in C
