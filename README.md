@@ -15,6 +15,7 @@ The database in this repository is for tracking Instagram accounts. One record i
 • Date last modified, e.g. 1710521259
 
 This record would be represented in CSV form as
+
 @spottedmcgill,14900,a bit cringe tbh,1710521259
 
 ## Compiling the program
