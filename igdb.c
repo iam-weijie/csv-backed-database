@@ -94,26 +94,32 @@ int main_loop(Database * db)
 					}
 					else if (db_lookup(db, handle) != NULL)
 						printf("Error: handle %s already exists.\n", handle);
-					else { 
-						printf("Comment> ");
-						fgets(comment, sizeof(comment), stdin);
-						comment[strcspn(comment, "\r\n")] = 0;	
+					else {
+						// check if input is too long
+                                                token = strtok(NULL, " ");
+                                                if (token != NULL)
+                                                        printf("Error: usage: update HANDLE FOLLOWERS\n");
+						else {	
+							printf("Comment> ");
+							fgets(comment, sizeof(comment), stdin);
+							comment[strcspn(comment, "\r\n")] = 0;	
 					
-						// check for comma in comment
-						if (strchr(comment, ',') != NULL)
-							printf("Error: comment cannot contain commas.\n");
-						else if (strlen(comment) > COMMENT_SIZE-1)
-                					printf("Error: comment too long.\n");
-						else {
-							// add record to the database
-							Record new_record;
-							strncpy(new_record.handle, handle, HANDLE_SIZE);
-							new_record.follower_count = followers;
-							strncpy(new_record.comment, comment, COMMENT_SIZE);
-							new_record.date_last_modified = time(NULL);
+							// check for comma in comment
+							if (strchr(comment, ',') != NULL)
+								printf("Error: comment cannot contain commas.\n");
+							else if (strlen(comment) > COMMENT_SIZE-1)
+                						printf("Error: comment too long.\n");
+							else {
+								// add record to the database
+								Record new_record;
+								strncpy(new_record.handle, handle, HANDLE_SIZE);
+								new_record.follower_count = followers;
+								strncpy(new_record.comment, comment, COMMENT_SIZE);
+								new_record.date_last_modified = time(NULL);
 							
-							db_append(db, &new_record);
-							set_unsaved_changes();
+								db_append(db, &new_record);
+								set_unsaved_changes();
+							}
 						}
 					}
 				}	
@@ -150,22 +156,30 @@ int main_loop(Database * db)
 						//(sscanf(token, "%lu", &followers) != 1)
                                         	printf("Error: follower count must be an integer\n");
 					}
-					else {
-                                        	printf("Comment> ");
-                                        	fgets(comment, sizeof(comment), stdin);
-                                        	comment[strcspn(comment, "\r\n")] = 0;
 
-                                        	// check for comma in comment
-                                        	if (strchr(comment, ',') != NULL)
-                                                	printf("Error: comment cannot contain commas.\n");
-                                        	else if (strlen(comment) > COMMENT_SIZE-1)
-                                                	printf("Error: comment too long.\n");
-                                        	else {
-                                                	// update record to the database
-                                        		record->follower_count = followers;
-							strncpy(record->comment, comment, COMMENT_SIZE);	
-							record->date_last_modified = time(NULL);
-							set_unsaved_changes();
+					else {
+						// check if input is too long
+						token = strtok(NULL, " ");
+						if (token != NULL)
+							printf("Error: usage: update HANDLE FOLLOWERS\n");
+
+						else {
+        	                                	printf("Comment> ");
+                	                        	fgets(comment, sizeof(comment), stdin);
+                        	                	comment[strcspn(comment, "\r\n")] = 0;
+	
+                                	        	// check for comma in comment
+                                        		if (strchr(comment, ',') != NULL)
+                                                		printf("Error: comment cannot contain commas.\n");
+                                        		else if (strlen(comment) > COMMENT_SIZE-1)
+                                                		printf("Error: comment too long.\n");
+                                        		else {
+                                                		// update record to the database
+                                        			record->follower_count = followers;
+								strncpy(record->comment, comment, COMMENT_SIZE);	
+								record->date_last_modified = time(NULL);
+								set_unsaved_changes();
+							}
 						}
 					}
                                 }
