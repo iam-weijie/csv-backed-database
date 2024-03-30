@@ -21,6 +21,32 @@ int has_unsaved_changes() {
 	return unsaved_changes;
 }
 
+// print out a record
+void print_record(Record *r) {
+	// Unix to ymd
+        struct tm *time = localtime(&(r->date_last_modified));
+        char ymd[20];
+        strftime(ymd, sizeof(ymd), "%Y-%m-%d %H:%M", time);
+
+        printf("%-15s | %-9lu | %-16s | %-34s\n", r->handle, r->follower_count, ymd, r->comment);
+}
+
+// print out all the records
+void print_database(Database *db) {
+	printf("%-15s | %-9s | %-16s | %-34s\n", "HANDLE", "FOLLOWERS", "LAST MODIFIED", "COMMENT");
+        printf("----------------|-----------|------------------|--------------------------------\n");
+        
+	for(size_t i = 0; i < (*db).size; i++) {
+		Record *r = db_index(db, i);
+		
+		// checking record to avoid segmentation fault
+		if (r != NULL)
+			print_record(r);
+		else
+			fprintf(stderr, "Error: Invalid record at index %zu\n", i);
+	}
+}
+
 int main_loop(Database * db)
 {
 	char command[100];
@@ -35,16 +61,7 @@ int main_loop(Database * db)
 		
 		// list the records
 		if (strcmp(command, "list") == 0) {
-			printf("%-15s | %-9s | %-16s | %-34s\n", "HANDLE", "FOLLOWERS", "LAST MODIFIED", "COMMENT");
-			printf("----------------|-----------|------------------|--------------------------------\n");
-			for(size_t i = 0; i < (*db).size; i++) {
-				// Unix to ymd
-				struct tm *time = localtime(&(*db).records[i].date_last_modified);
-				char ymd[20];
-				strftime(ymd, sizeof(ymd), "%Y-%m-%d %H:%M", time);
-
-				printf("%-15s | %-9lu | %-16s | %-34s\n", db->records[i].handle, db->records[i].follower_count, ymd, db->records[i].comment);
-			}
+			print_database(db);
 			printf("> ");
 		} 
 		
@@ -78,7 +95,7 @@ int main_loop(Database * db)
 					else if (db_lookup(db, handle) != NULL)
 						printf("Error: handle %s already exists.\n", handle);
 					else { 
-						printf("Comment > ");
+						printf("Comment> ");
 						fgets(comment, sizeof(comment), stdin);
 						comment[strcspn(comment, "\r\n")] = 0;	
 					
@@ -134,7 +151,7 @@ int main_loop(Database * db)
                                         	printf("Error: follower count must be an integer\n");
 					}
 					else {
-                                        	printf("Comment > ");
+                                        	printf("Comment> ");
                                         	fgets(comment, sizeof(comment), stdin);
                                         	comment[strcspn(comment, "\r\n")] = 0;
 
@@ -179,6 +196,12 @@ int main_loop(Database * db)
 		else if (strcmp(command, "exit fr") == 0) {
 			db_free(db);
 			exit(EXIT_SUCCESS);
+		}
+
+		// invalid operation
+		else {
+			printf("Error: Invald operation. Allowed operations: list, add, update, save, exit\n");
+			printf("> ");
 		}
 	}
 }
