@@ -76,7 +76,7 @@ void db_load_csv(Database *db, char const *path) {
 		return;
 	}
 
-	char *line;
+	char *line = NULL;
 	size_t len = 0;
 
 	while (getline(&line, &len, file) != -1) {
