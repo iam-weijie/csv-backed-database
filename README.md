@@ -26,7 +26,7 @@ which the Makefile is present. This will separately compile `database.c` into `d
 
 ## User interactions with the database
 
-Here is a description of the commands that are supported.
+Here is a description of the commands that are supported after running `./igdb`.
 
 • list – print out the whole database formatted as a table.
 
